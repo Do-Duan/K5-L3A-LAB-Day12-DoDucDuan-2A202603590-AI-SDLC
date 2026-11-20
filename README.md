@@ -1,6 +1,6 @@
 # Đảo Đèn Lồng
 
-> **Video demo:** _TODO: dán link video (Release v1.0.0 hoặc `docs/demo/demo.mp4`) vào đây._
+> **Video demo:** https://www.youtube.com/watch?v=H4f8KESbaBg  hoặc `docs/demo/demo.mp4`
 
 Game 3D góc nhìn thứ ba chạy trên trình duyệt (Three.js + TypeScript). Mây gom đom đóm, thắp và **giữ cho đèn lồng sáng tới bình minh**, né Bóng Mực (chúng hút dầu của đèn yếu) và dùng Tỏa Sáng để làm chúng choáng. Ba Đêm: Đảo Bến, Hai Đảo, Đỉnh Chuông.
 
