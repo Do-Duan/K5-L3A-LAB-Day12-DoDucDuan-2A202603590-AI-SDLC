@@ -1,13 +1,13 @@
 {
-  "contract_version": "1.0",
+  "contract_version": "1.1",
   "team": "2A202603590-do-duc-duan",
   "build_cmd": "npm install && npm run build",
   "run_cmd": "npm run dev",
   "headless_cmd": "npm run headless --",
   "tuning": {
     "player_speed": 5,
-    "carry_capacity": 8,
-    "lantern_cost": 5,
+    "carry_capacity": 10,
+    "lantern_cost": 10,
     "lantern_count_night1": 5,
     "pickup_radius": 1.25,
     "interact_radius": 2.4,
@@ -23,7 +23,12 @@
     "safe_radius": 3,
     "shade_speed": 2.2,
     "shade_hit_radius": 1.1,
-    "fall_enabled": false,
-    "score": { "per_mote": 10, "per_lantern": 100, "per_stun": 25, "per_second_left": 2, "per_flame_left": 50 }
+    "dash_speed": 14,
+    "dash_duration_s": 0.2,
+    "dash_cooldown_s": 1.5,
+    "night2_duration_s": 360,
+    "night3_duration_s": 360,
+    "fall_enabled": true,
+    "score": { "per_mote": 10, "per_lantern": 100, "per_stun": 5, "per_second_left": 2, "per_flame_left": 50 }
   }
 }
