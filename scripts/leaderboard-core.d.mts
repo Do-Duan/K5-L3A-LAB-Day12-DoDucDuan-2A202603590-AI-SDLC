@@ -1,0 +1,10 @@
+export type LeaderboardEntry = { name: string; score: number; nights_won: number; achieved_at: string; seed: number };
+export const MAX_ENTRIES: number;
+export const NAME_MIN: number;
+export const NAME_MAX: number;
+export const NAME_RE: RegExp;
+export function isoLocal(d?: Date): string;
+export function validateName(name: unknown): string | null;
+export function normalizeEntry(raw: unknown, now?: Date): LeaderboardEntry;
+export function rank(entries: LeaderboardEntry[]): LeaderboardEntry[];
+export function addEntry(entries: LeaderboardEntry[], raw: unknown, now?: Date): LeaderboardEntry[];

@@ -14,7 +14,7 @@ const names = (sim: Simulation) => sim.takeEvents().map(e => e.name);
 
 import contract from '../../game.contract.json' with { type: 'json' };
 test('contract fields', () => {
-  assert.equal(contract.contract_version, '1.2');
+  assert.equal(contract.contract_version, '1.3');
   const t = contract.tuning;
   assert.deepEqual([t.fuel_max, t.fuel_decay_per_s, t.fuel_per_mote, t.relight_cost, t.win_ratio, t.drain_per_s, t.low_fuel_threshold, t.capacity_max], [100, 1, 10, 5, 0.6, 5, 30, 20]);
   assert.deepEqual([t.night1_duration_s, t.night2_duration_s, t.night3_duration_s], [240, 270, 300]);

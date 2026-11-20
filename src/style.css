@@ -1,3 +1,40 @@
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Marcellus&display=swap');
-*{box-sizing:border-box}body{margin:0;overflow:hidden;background:#11172b;color:#fff;font-family:'DM Sans',sans-serif}canvas{position:fixed;inset:0}.hud{position:fixed;z-index:2;top:22px;left:50%;transform:translateX(-50%);width:min(720px,92vw);text-align:center;pointer-events:none}.brand{font:22px Marcellus,serif;letter-spacing:4px;color:#ffd58c;text-shadow:0 0 20px #ffbc6577}.stats{display:flex;justify-content:center;gap:24px;margin-top:14px;font-size:15px;color:#fff0d0}.objective{display:inline-block;margin-top:14px;padding:8px 17px;border:1px solid #ffd58c55;border-radius:30px;background:#171b2bcc;color:#ffe0a5;font-size:11px;letter-spacing:2px}:root{--warn:#FF5A5F}.warn{margin-top:8px;font-size:13px;font-weight:700;letter-spacing:2px;color:var(--warn);min-height:18px}.hint{position:fixed;z-index:2;bottom:20px;left:50%;transform:translateX(-50%);padding:11px 18px;background:#12182acc;border:1px solid #ffffff24;border-radius:30px;color:#d8d6df;font-size:12px;white-space:nowrap}.center{position:fixed;z-index:3;top:42%;left:50%;transform:translate(-50%,-50%);font:clamp(32px,7vw,68px) Marcellus,serif;text-align:center;color:#ffda96;text-shadow:0 0 35px #ffbd58}.center small{display:block;margin-top:14px;font:16px 'DM Sans';color:#fff}.restart{display:none;position:fixed;z-index:4;top:58%;left:50%;transform:translateX(-50%);border:0;border-radius:24px;padding:12px 25px;background:#ffcf82;color:#201b24;font-weight:700;cursor:pointer}
-.screen{position:fixed;z-index:8;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;background:#0c1021df;backdrop-filter:blur(8px);text-align:center}.screen h1{font:clamp(30px,6vw,58px) Marcellus,serif;color:#ffda96;margin:0}.screen p,.screen label{color:#e5dfd5}.screen button,.next{border:1px solid #ffda96;border-radius:24px;padding:11px 24px;background:#ffcf82;color:#201b24;font-weight:700;cursor:pointer}.screen label{display:flex;gap:16px;align-items:center}.hidden{display:none!important}.next{margin:20px auto;display:block}
+/* Base UI size is 18px (min. text size at 1280x720); "Chữ lớn" multiplies it by 1.25 through --ui. */
+:root{--warn:#FF5A5F;--ui:1}
+html{font-size:calc(18px * var(--ui))}
+*{box-sizing:border-box}
+body{margin:0;overflow:hidden;background:#11172b;color:#fff;font-family:'DM Sans',sans-serif;font-size:1rem}
+canvas{position:fixed;inset:0}
+.hud{position:fixed;z-index:2;top:14px;left:50%;transform:translateX(-50%);width:min(900px,96vw);text-align:center;pointer-events:none}
+.brand{font:1.25rem Marcellus,serif;letter-spacing:.2em;color:#ffd58c;text-shadow:0 0 20px #ffbc6577}
+.stats{display:flex;justify-content:center;gap:1.4rem;margin-top:8px;font-size:1rem;color:#fff0d0;flex-wrap:wrap}
+.objective{display:inline-block;margin-top:8px;padding:6px 16px;border:1px solid #ffd58c55;border-radius:30px;background:#171b2bcc;color:#ffe0a5;font-size:1rem;letter-spacing:.05em}
+.warn{margin-top:6px;font-size:1rem;font-weight:700;letter-spacing:.08em;color:var(--warn);min-height:1.4rem}
+.cues{display:flex;flex-direction:column;align-items:center;gap:4px;margin-top:4px}
+.cue{padding:3px 14px;border-radius:14px;background:#12182acc;border:1px solid #ffffff30;font-size:1rem;font-weight:700;color:#fff}
+.hint{position:fixed;z-index:2;bottom:14px;left:50%;transform:translateX(-50%);max-width:96vw;text-align:center;padding:8px 18px;background:#12182acc;border:1px solid #ffffff24;border-radius:26px;color:#e6e4ec;font-size:1rem}
+.flash{position:fixed;inset:0;z-index:5;background:var(--warn);opacity:0;pointer-events:none}
+.arrow{position:fixed;z-index:6;display:none;color:var(--warn);font-size:2rem;text-shadow:0 0 6px #000,0 0 2px #000;pointer-events:none}
+.center{position:fixed;z-index:3;top:42%;left:50%;transform:translate(-50%,-50%);font:clamp(32px,7vw,68px) Marcellus,serif;text-align:center;color:#ffda96;text-shadow:0 0 35px #ffbd58}
+.screen{position:fixed;z-index:8;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:safe center;gap:12px;padding:16px;overflow:auto;background:#0c1021ec;backdrop-filter:blur(8px);text-align:center}
+.screen h1{font:clamp(30px,5vw,54px) Marcellus,serif;color:#ffda96;margin:0}
+.screen h2{font:1.25rem Marcellus,serif;color:#ffda96;margin:6px 0 0}
+.screen p,.screen label{color:#e5dfd5;font-size:1rem;margin:0}
+.screen label{display:flex;gap:12px;align-items:center;justify-content:center}
+.screen button,.next{border:1px solid #ffda96;border-radius:24px;padding:9px 22px;background:#ffcf82;color:#201b24;font:700 1rem 'DM Sans',sans-serif;cursor:pointer}
+.screen button:focus-visible,.screen input:focus-visible{outline:3px solid #fff;outline-offset:2px}
+.row{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+.settings-grid{display:flex;flex-direction:column;gap:8px;align-items:flex-start}
+.keys{display:grid;gap:6px;width:min(640px,94vw)}
+.key-row{display:grid;grid-template-columns:1fr 130px 130px;gap:8px;align-items:center;text-align:left;color:#e5dfd5}
+.screen .key-btn{background:#1d2440;color:#ffe0a5;border-radius:10px;padding:5px 10px;min-height:2rem}
+.key-msg{min-height:1.4rem;color:#ffe0a5;font-size:1rem}
+#name-form{display:flex;flex-direction:column;gap:8px;align-items:center}
+#name-form label{flex-direction:column;gap:6px}
+input[type=text],#name{font:1rem 'DM Sans',sans-serif;padding:7px 12px;border-radius:10px;border:1px solid #ffda96;background:#0c1021;color:#fff;width:16rem;text-align:center}
+.board{width:min(760px,94vw)}
+.board table{width:100%;border-collapse:collapse;font-size:1rem}
+.board th,.board td{padding:6px 10px;border-bottom:1px solid #ffffff22;text-align:left}
+.board th{color:#ffda96}
+.hidden{display:none!important}
+.next{margin:20px auto;display:block}
