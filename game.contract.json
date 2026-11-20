@@ -47,6 +47,8 @@
     "win_ratio": 0.6,
     "drain_per_s": 5,
     "low_fuel_threshold": 30,
-    "capacity_max": 20
+    "capacity_max": 20,
+    "mote_spawn_interval_s": 3,
+    "mote_field_max": 40
   }
 }

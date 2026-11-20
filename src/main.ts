@@ -4,6 +4,7 @@ import { benchScenario, benchCamera, benchStats, BENCH } from './bench';
 import { ACTIONS, DEFAULT_KEYS, findConflict, isPressed, keyLabel, loadSettings, saveSettings, type Action, type Settings } from './settings';
 import { clearCampaign, enterNight, loadCampaign, newCampaign, nightsWon, saveCampaign, totalScore } from './campaign';
 import { fetchLeaderboard, submitScore, validateName, isoLocal, NAME_MAX, NAME_MIN } from './leaderboard';
+import contract from '../game.contract.json';
 import './style.css';
 
 /* ------------------------------------------------------------------ mode & state */
@@ -18,7 +19,7 @@ const benchDuration = Number(params.get('duration') ?? '30');
 let campaign = loadCampaign() ?? newCampaign(12);
 if (!menuMode && !bench) { campaign = enterNight(campaign, night); saveCampaign(campaign); }
 const seed = bench ? benchSeed : campaign.seed + night;
-const sim = new Simulation(seed, bench ? benchScenario(benchSeed) : {}, night);
+const sim = new Simulation(seed, bench ? benchScenario(benchSeed) : { mote_spawn: true }, night);
 let settings: Settings = loadSettings();
 
 /* ------------------------------------------------------------------ DOM */
@@ -133,6 +134,34 @@ function makeShade() {
   g.add(new THREE.Mesh(shadeBodyGeo, shadeBodyMat), new THREE.Mesh(shadeRimGeo, shadeRimMat));
   for (const x of [-0.22, 0.22]) { const e = new THREE.Mesh(shadeEyeGeo, shadeEyeMat); e.position.set(x, 0.15, 0.58); g.add(e); }
   scene.add(g); return g;
+}
+
+/* ------------------------------------------------------------------ Tỏa Sáng (pulse) effect */
+const PULSE_R = contract.tuning.pulse_radius, PULSE_S = 0.6;
+const ringGeo = new THREE.RingGeometry(0.9, 1, 64), glowGeo = new THREE.SphereGeometry(1, 24, 16);
+const pulseFx: { ring: THREE.Mesh; glow: THREE.Mesh; light: THREE.PointLight; t: number }[] = [];
+function spawnPulse() {
+  const base = { transparent: true, depthWrite: false, blending: THREE.AdditiveBlending } as const;
+  const ring = new THREE.Mesh(ringGeo, new THREE.MeshBasicMaterial({ color: '#ffe9a8', side: THREE.DoubleSide, ...base }));
+  ring.rotation.x = -Math.PI / 2; ring.position.set(sim.player.pos[0], sim.player.pos[1] + 0.12, sim.player.pos[2]);
+  const glow = new THREE.Mesh(glowGeo, new THREE.MeshBasicMaterial({ color: '#ffd27a', ...base }));
+  glow.position.set(sim.player.pos[0], sim.player.pos[1] + 1.1, sim.player.pos[2]);
+  const light = new THREE.PointLight('#ffe9a8', 10, PULSE_R * 2.2); light.position.copy(glow.position);
+  scene.add(ring, glow, light); pulseFx.push({ ring, glow, light, t: 0 });
+}
+function updatePulse(dt: number) {
+  for (let i = pulseFx.length - 1; i >= 0; i--) {
+    const f = pulseFx[i]; f.t += dt;
+    const k = f.t / PULSE_S;
+    if (k >= 1) { scene.remove(f.ring, f.glow, f.light); (f.ring.material as THREE.Material).dispose(); (f.glow.material as THREE.Material).dispose(); pulseFx.splice(i, 1); continue; }
+    // "Giảm chuyển động": no expanding wave, just a soft fading glow at full radius.
+    const r = settings.reduceMotion ? PULSE_R : PULSE_R * (1 - (1 - k) ** 3);
+    f.ring.scale.setScalar(Math.max(0.01, r));
+    f.glow.scale.setScalar(settings.reduceMotion ? 1.2 : 0.6 + 1.4 * (1 - k));
+    (f.ring.material as THREE.MeshBasicMaterial).opacity = 1 - k;
+    (f.glow.material as THREE.MeshBasicMaterial).opacity = 0.55 * (1 - k);
+    f.light.intensity = 10 * (1 - k);
+  }
 }
 
 /* ------------------------------------------------------------------ settings UI */
@@ -258,7 +287,8 @@ function handleEvents() {
       addTransient(`spawn-${id}`, '⚠ Bóng Mực xuất hiện', 4000);
       const el = document.createElement('div'); el.className = 'arrow'; el.textContent = '➤'; el.setAttribute('aria-hidden', 'true'); arrowsEl.append(el);
       spawnArrows.set(id, { until: performance.now() + 6000, el });
-    } else if (ev.name === 'lantern_out') addTransient(`out-${ev.data.lantern_id}`, `⚠ Đèn ${ev.data.lantern_id} đã tắt`, 3000);
+    } else if (ev.name === 'pulse') spawnPulse();
+    else if (ev.name === 'lantern_out') addTransient(`out-${ev.data.lantern_id}`, `⚠ Đèn ${ev.data.lantern_id} đã tắt`, 3000);
     else if (ev.name === 'refuel') addTransient('refuel', `✦ Châm dầu đèn ${ev.data.lantern_id}`, 1200);
   }
 }
@@ -355,6 +385,7 @@ function frame(ts: number) {
   }
   if (sim.state === 'paused') { show(pauseMenu, true); menuOpen = true; }
   handleEvents();
+  updatePulse(dt);
   player.position.set(sim.player.pos[0], sim.player.pos[1], sim.player.pos[2]);
 
   const blink = Math.floor(elapsed * 2) % 2 === 0; // 1 Hz
@@ -366,8 +397,13 @@ function frame(ts: number) {
     glow.material = lit ? litMat : offMat;
     (g.children[2] as THREE.PointLight).intensity = lit && show1 ? 1.2 + 2.3 * fuel / 100 : 0;
     glow.visible = show1; glow.scale.y = lit ? 1 : 0.8; // unlit lanterns are squashed 20%
-    g.children[3].visible = lit && show1; g.children[4].visible = lit && show1;
-    g.children[3].scale.x = Math.max(0.001, fuel / 100); g.children[3].position.x = -0.6 * (1 - fuel / 100);
+    // Progress bar on every lantern: fuel when lit (gold), deposited motes towards lighting when unlit (cyan).
+    const cost = L.ever_lit ? contract.tuning.relight_cost : contract.tuning.lantern_cost;
+    const prog = lit ? fuel / 100 : Math.min(1, L.deposited / cost);
+    const barOn = lit ? show1 : true;
+    g.children[3].visible = barOn; g.children[4].visible = barOn;
+    g.children[3].scale.x = Math.max(0.001, prog); g.children[3].position.x = -0.6 * (1 - prog);
+    ((g.children[3] as THREE.Mesh).material as THREE.MeshBasicMaterial).color.set(lit ? '#ffd58c' : '#7fe3ff');
     g.children[5].visible = !lit; // torn paper
   }
   while (moteMeshes.length < sim.motes.length) { const o = new THREE.Mesh(moteGeo, moteMat); scene.add(o); moteMeshes.push(o); }

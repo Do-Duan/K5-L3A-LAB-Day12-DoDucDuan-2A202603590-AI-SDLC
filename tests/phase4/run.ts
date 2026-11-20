@@ -129,4 +129,26 @@ test('soak smoke: 3 nights, deterministic JSON shape, thresholds met', () => {
   } finally { rmSync(dir, { recursive: true, force: true }); }
 });
 
+test('mote spawning is opt-in: default headless output has no mote_spawned', () => {
+  const sim = new Simulation(5, {}, 1);
+  const n0 = sim.motes.length;
+  for (let i = 0; i < 3000; i++) sim.step({ move: [0, 0] });
+  assert.equal(sim.takeEvents().filter(x => x.name === 'mote_spawned').length, 0);
+  assert.equal(sim.motes.length, n0);
+});
+
+test('mote spawning (game mode): 1 mote / 3 s, capped at 40, deterministic, on the island', () => {
+  const run = () => { const sim = new Simulation(5, { mote_spawn: true, random_motes: false, random_shades: false, motes: [] }, 1); for (let i = 0; i < 180 * 10; i++) sim.step({}); return sim; };
+  const a = run(), b = run();
+  assert.equal(a.motes.length, 10); assert.equal(JSON.stringify(a.motes), JSON.stringify(b.motes));
+  for (const m of a.motes) assert.ok(Math.hypot(m.pos[0], m.pos[2]) <= 36 + 1e-6);
+  assert.equal(new Set(a.motes.map(m => m.id)).size, 10);
+  const full = new Simulation(5, { mote_spawn: true, random_shades: false, random_motes: false, motes: [] }, 1);
+  for (let i = 0; i < 180 * 60; i++) full.step({});
+  assert.equal(full.motes.length, 40);
+  const bench = new Simulation(5, { mote_spawn: true, bench: true, motes: [], shades: [] }, 1);
+  for (let i = 0; i < 900; i++) bench.step({});
+  assert.equal(bench.motes.length, 0); // benchmark scene never spawns
+});
+
 console.log(`\n${passed} passed`);
