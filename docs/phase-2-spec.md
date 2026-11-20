@@ -13,8 +13,9 @@ Source: user-provided Ticket-02. The pasted ticket omitted its “standard numbe
 - [x] Base night layouts, lantern coordinates, 60 Hz fixed stepping, jump/dash and pause support are represented in the simulation. Night 2 bridge/island and Night 3 terraces are represented in the renderer.
 - [x] Intro screen, pause menu, retry, settings sliders persisted in local storage, and next-night link are present.
 - [x] Scenario fixtures exercise dash, pause/resume, charm pickup, drifter steal/drop, and full-night runs. Outputs are committed under `tests/phase2/`.
+- [x] Solid collision checks block the Night 3 bell tower and prevent walking up vertical tier faces; movement slides along circular colliders, ramps provide the intended upward path, and jump pads remain triggers. Verified with tower and ledge headless scenarios.
 - [x] Full headless runs completed at 18,000 ticks for Night 1 and 21,600 ticks for Nights 2 and 3; local wall time was 1.05–1.20 s per run, including Node/npm startup. These runs used the empty deterministic scenario.
-- [ ] Exact walkable slopes/platform collision, all spawn-point and AI edge cases, full HUD cues/arrow, mouse camera sensitivity, all specified sound cues, and end-to-end campaign score persistence still need completion/review.
+- [ ] Walkable slope/platform collision remains an approximation; also pending are all spawn-point and AI edge cases, full HUD cues/arrow, mouse camera sensitivity, all specified sound cues, and end-to-end campaign score persistence.
 - [ ] Hidden Phase 1 regression and 30 FPS at 1280×720 have no recorded evidence; GUI measurement needs a browser/device run.
 
 The unchecked criteria are known remaining work; no evidence is claimed for them.

@@ -1,6 +1,6 @@
 # Đảo Đèn Lồng
 
-Game 3D góc nhìn thứ ba chạy trên trình duyệt, làm bằng Three.js + TypeScript. Chọn đêm qua `?night=1`, `?night=2` hoặc `?night=3`. Mây thu thập đom đóm, thắp đèn, né Bóng Mực và dùng xung sáng để tạm thời làm chúng choáng.
+Game 3D góc nhìn thứ ba chạy trên trình duyệt, làm bằng Three.js + TypeScript. Chọn đêm qua `?night=1`, `?night=2` hoặc `?night=3`. Mây thu thập đom đóm, giữ dầu cho các đèn, né Bóng Mực và sống sót tới bình minh.
 
 ## Chạy game
 
@@ -22,7 +22,7 @@ Mở URL Vite in ra (thường là `http://localhost:5173`). Build bản web: `n
 - Shift: lướt
 - Esc hoặc P: tạm dừng
 
-Mỗi đom đóm +10 điểm; mỗi đèn hoàn tất +100 điểm; làm Bóng Mực choáng +25 điểm; thắng cộng điểm theo thời gian và số mạng còn lại.
+Mỗi đom đóm nạp vào đèn +5 điểm; thắp lần đầu +100, thắp lại +40. Giữ đủ 60% số đèn sáng tới bình minh để thắng; thưởng bình minh dựa trên nhiên liệu đèn còn lại và số Ngọn Lửa.
 
 ## Headless / Test Contract
 
@@ -32,6 +32,10 @@ npm run headless -- --seed 12 --night 1 --scenario scenario.json --inputs inputs
 ```
 
 Mô phỏng chạy fixed-step 60 Hz, output JSONL snapshot/event/end. Cùng seed và input tạo cùng kết quả. Các tuning được khai báo trong `game.contract.json`.
+
+## Phase 3: contract v1.2
+
+Đèn tiêu hao nhiên liệu, có thể châm dầu hoặc thắp lại. Bóng Mực hút dầu từ đèn yếu; thắng yêu cầu giữ đủ số đèn sáng tới bình minh. Các luật thay thế, bằng chứng và thay đổi phá vỡ tương thích được ghi trong [`docs/adr/0003-fuel-and-dawn-victory.md`](docs/adr/0003-fuel-and-dawn-victory.md), [`CHANGELOG.md`](CHANGELOG.md) và `tests/phase3/`.
 
 ## Phase 2: contract v1.1
 
