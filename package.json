@@ -1,12 +1,13 @@
 {
   "name": "dao-den-long",
-  "version": "1.0.0",
+  "version": "1.2.0",
   "private": true,
   "type": "module",
   "scripts": {
     "dev": "vite --host 0.0.0.0",
     "build": "tsc -b && vite build",
-    "headless": "tsx src/headless.ts"
+    "headless": "tsx src/headless.ts",
+    "test:phase3": "tsx tests/phase3/run.ts"
   },
   "dependencies": { "three": "^0.180.0" },
   "devDependencies": { "@types/node": "^22.15.0", "@types/three": "^0.180.0", "tsx": "^4.19.0", "typescript": "^5.8.0", "vite": "^6.3.0" }
